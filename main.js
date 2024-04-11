@@ -1,8 +1,10 @@
 const gameBoard = (()=>{
     let board = ["", "", "", "", "", "", "", "", ""];
+      
     const updateBoard = (id,value) =>{
         board[id] = value;
         render();
+        
     }
     const render = () => {
         let box = document.querySelector(".gameBoard");
@@ -14,10 +16,13 @@ const gameBoard = (()=>{
         square.forEach((sq)=>{
             sq.addEventListener("click",game.selectValue);
         })
+        game.checkWin(board);
     };
+    const getGameboard = ()=>{return board;}
     return {
         render,
-        updateBoard
+        updateBoard,
+        getGameboard,
     }
 })();
 
@@ -32,6 +37,7 @@ const game = (()=>{
     let users=[];
     let currentPlayer;
     let gameOver;
+    
     const start = ()=>{
         users = [
             createPlayer(document.querySelector("#p1").value,"X"),
@@ -47,6 +53,9 @@ const game = (()=>{
     };
     const selectValue = (e)=>{
         let id = parseInt(e.target.id.split("-")[1]);
+        if(gameBoard.getGameboard()[id] != ""){
+            return;
+        }
         gameBoard.updateBoard(id,users[currentPlayer].mark);
         if(currentPlayer){
             currentPlayer = 0;
@@ -56,9 +65,19 @@ const game = (()=>{
         }
         
     }
+    const checkWin = (board)=>{
+        winConditions = [[0,1,2],[0,3,6],[1,4,7],[2,5,8],[3,4,5],[6,7,8],[0,4,8],[2,4,6]];
+        for(let i=0;i<winConditions.length;i++){
+            let [a,b,c] = winConditions[i];
+            if(board[a] && board[a]==board[b] && board[b]==board[c]){
+                alert(`${users[currentPlayer].name} Wins the match!!`);
+            }
+        }
+    } 
     return {
         start,
-        selectValue
+        selectValue,
+        checkWin
     }
 })();
 
